@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+    <script type="text/javascript">
+        function drawBeauty(beauty) {
+            var mycv = document.getElementById("myCanvas");
+            var myctx = mycv.getContext("2d");
+            myctx.drawImage(beauty, 0, 0);
+        }
+        function loadPictrue() {
+            var beauty = new Image();
+            beauty.src = "./images/scene1.jpg";
+            if (beauty.complete) {
+                drawBeauty(beauty);
+            } else {
+                beauty.onload = function () {
+                    drawBeauty(beauty);
+                };
+                beauty.onerror = function () {
+                    window.alert('美女加载失败，请重试');
+                };
+            };
+        }//load
+        window.addEventListener('load', loadPictrue, false);
+
+    </script>
+</body>
+
+</html>
