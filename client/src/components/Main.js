@@ -2,37 +2,64 @@ require('normalize.css/normalize.css');
 require('styles/App.css');
 
 import React from 'react';
-
+import Toolbar from './Toolbar';
 
 class AppComponent extends React.Component {
 
   constructor() {
     super();
     this.state = {
-      loading: false
+      dirty: false
     }
+    this.loadingImage = this.loadingImage.bind(this);
   }
 
   componentDidMount() {
     this.loadingImage();
+    this.dirty = false;
+  }
+
+  componentWillUpdate() {
+    console.log("xxx update");
   }
 
   loadingImage() {
-    var myimage = new Image();
-    const ctx = this.refs.canvas.getContext('2d');
-    myimage.onload = function () {
-      console.log(ctx);
-      ctx.drawImage(myimage, 0, 0);
+
+    var image = new Image();
+    var canvas = this.refs.canvas;
+    const ctx = canvas.getContext('2d');
+    var dirtyfunc = () => { this.setState({ dirty: true }) };
+
+    image.onload = function () {
+      ctx.drawImage(image, 0, 0);
     }
-    myimage.src = 'http://localhost:8080/f.jpg';
-    this.setState({ loading: true });
+    image.src = 'http://localhost:8080/f.jpg';
+    var zoomDelta = 0.1;
+    var currentScale = 1;
+
+    canvas.addEventListener('mousewheel', function (e) {
+      ctx.save();
+      var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+      var width = image.width;
+      var height = image.height;
+      console.log("delta: " + delta);
+      // var scale = 2;
+      currentScale += delta * zoomDelta;
+      ctx.clearRect(0, 0, width, height);
+      // ctx.translate(-((newWidth - width) / 2), -((newHeight - height) / 2));
+      console.log("current scale size:"+ currentScale);
+      ctx.scale(currentScale, currentScale);
+      ctx.drawImage(image, 0, 0);
+      ctx.restore();
+    }, false);
+
   }
 
   render() {
-    this.loadingImage = this.loadingImage.bind(this);
     return (
       <div className="index">
-        <canvas ref="canvas" width={800} height={600}/>
+        <Toolbar />
+        <canvas ref="canvas" width={550} height={820} />
       </div>
     );
   }
