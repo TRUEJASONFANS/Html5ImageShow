@@ -93,9 +93,27 @@ class AppComponent extends React.Component {
     var scaleFactor = 1.1;
     var redraw = this.redraw;
 
+    var zoomFun = function(delta) {
+      var pt = ctx.transformedPoint(lastX, lastY);
+      ctx.translate(pt.x, pt.y);
+      var factor = Math.pow(scaleFactor, delta);
+      ctx.scale(factor, factor);
+      ctx.translate(-pt.x, -pt.y);
+      redraw(image, ctx, canvas);
+    }
+
+    canvas.addEventListener('mousedown', function (evt) {
+      lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
+      lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
+      var style = canvas.style.cursor;
+      if (style === 'zoom-in') {
+        zoomFun(3);
+      } else if (style === "zoom-out") {
+        zoomFun(-3);
+      }
+    }, false);
+
     canvas.addEventListener('mousemove', function (evt) {
-      console.log("evt.pageX :" + evt.pageX + "evt.pageY" + evt.pageY);
-      console.log("evt.offsetX :" + evt.offsetX + "evt.offsetY :" + evt.offsetY);
       lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
       lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
     }, false);
@@ -103,12 +121,7 @@ class AppComponent extends React.Component {
     canvas.addEventListener('mousewheel', function (evt) {
       var delta = evt.wheelDelta ? evt.wheelDelta / 40 : evt.detail ? -evt.detail : 0;
       if (delta) {
-        var pt = ctx.transformedPoint(lastX, lastY);
-        ctx.translate(pt.x, pt.y);
-        var factor = Math.pow(scaleFactor, delta);
-        ctx.scale(factor, factor);
-        ctx.translate(-pt.x, -pt.y);
-        redraw(image, ctx, canvas);
+        zoomFun(delta);
       };
       return evt.preventDefault() && false;
     }, false);
@@ -127,11 +140,17 @@ class AppComponent extends React.Component {
     ctx.drawImage(image, 0, 0);
   }
 
+  changeCursor(style) {
+    var canvas = this.refs.canvas;
+    console.log(canvas);
+    canvas.style.cursor = style;
+  }
+
   render() {
     return (
       <div className="index">
-        <Toolbar />
-        <canvas ref="canvas" width={550} height={820} />
+        <Toolbar zoomin={() => { this.changeCursor("zoom-in") }} zoomout={() => { this.changeCursor("zoom-out") }} />
+        <canvas className="mainCanvas" ref="canvas" width={550} height={820} />
       </div>
     );
   }

@@ -19,3 +19,15 @@ body {
   border-width: 1px 0;
   background: #666;
 }
+
+#zoomin{
+  background-image: url( '../images/zoom-in.png' );
+  height: 48px;  
+  width: 48px;
+}
+
+#zoomout{
+  background-image: url( '../images/zoom-out.png' );
+  height: 48px;  
+  width: 48px;
+}
