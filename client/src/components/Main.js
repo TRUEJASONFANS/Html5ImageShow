@@ -148,7 +148,7 @@ class AppComponent extends React.Component {
 
   render() {
     return (
-      <div className="index">
+      <div className="MainPage">
         <Toolbar zoomin={() => { this.changeCursor("zoom-in") }} zoomout={() => { this.changeCursor("zoom-out") }} />
         <canvas className="mainCanvas" ref="canvas" width={550} height={820} />
       </div>
